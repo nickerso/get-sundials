@@ -42,6 +42,11 @@ SET(PACKAGE_STRING "SUNDIALS 2.7.0")
 SET(PACKAGE_TARNAME "sundials")
 SET(PACKAGE_VERSION "2.7.0")
 
+# PACKAGE_VERSION gets overridden by using other packages, so setting
+# the PROJECT_VERSION, which will be used when exporting targets - although
+# currently using the sub-library specific versions so this is unused.
+set(PROJECT_VERSION ${PACKAGE_VERSION})
+
 # 
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 

@@ -18,6 +18,9 @@
 
 INSTALL(CODE "MESSAGE(\"\nInstall CVODE\n\")")
 
+# used to create CMake config files for projects using this library
+include(CMakePackageConfigHelpers)
+
 IF(MPI_MPICC)
   # use MPI_MPICC as the compiler
   SET(CMAKE_C_COMPILER ${MPI_MPICC})
@@ -133,8 +136,18 @@ IF(BUILD_STATIC_LIBS)
   SET_TARGET_PROPERTIES(sundials_cvode_static
     PROPERTIES OUTPUT_NAME sundials_cvode CLEAN_DIRECT_OUTPUT 1)
 
-  # Install the CVODE library
-  INSTALL(TARGETS sundials_cvode_static DESTINATION lib)
+  # Install the CVODE library and export the target
+  INSTALL(TARGETS sundials_cvode_static EXPORT sundials_cvode_static-config
+      DESTINATION lib
+      INCLUDES DESTINATION include)
+
+  # and install the exported target configuration
+  install(EXPORT sundials_cvode_static-config DESTINATION ${PACKAGE_CONFIG_DIR})
+  WRITE_BASIC_PACKAGE_VERSION_FILE(${CMAKE_CURRENT_BINARY_DIR}/sundials_cvode_static-config-version.cmake
+      VERSION ${cvodelib_VERSION}
+      COMPATIBILITY AnyNewerVersion)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sundials_cvode_static-config-version.cmake
+      DESTINATION ${PACKAGE_CONFIG_DIR})
 
 ENDIF(BUILD_STATIC_LIBS)
 
@@ -153,8 +166,18 @@ IF(BUILD_SHARED_LIBS)
   SET_TARGET_PROPERTIES(sundials_cvode_shared
     PROPERTIES VERSION ${cvodelib_VERSION} SOVERSION ${cvodelib_SOVERSION})
 
-  # Install the CVODE library
-  INSTALL(TARGETS sundials_cvode_shared DESTINATION lib)
+  # Install the CVODE library and export the target
+  INSTALL(TARGETS sundials_cvode_shared EXPORT sundials_cvode_shared-config
+      DESTINATION lib
+      INCLUDES DESTINATION include)
+
+  # and install the exported target configuration
+  install(EXPORT sundials_cvode_shared-config DESTINATION ${PACKAGE_CONFIG_DIR})
+  WRITE_BASIC_PACKAGE_VERSION_FILE(${CMAKE_CURRENT_BINARY_DIR}/sundials_cvode_shared-config-version.cmake
+      VERSION ${cvodelib_VERSION}
+      COMPATIBILITY AnyNewerVersion)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sundials_cvode_shared-config-version.cmake
+      DESTINATION ${PACKAGE_CONFIG_DIR})
 
 ENDIF(BUILD_SHARED_LIBS)
 

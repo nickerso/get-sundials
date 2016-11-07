@@ -18,6 +18,9 @@
 
 INSTALL(CODE "MESSAGE(\"\nInstall NVECTOR_SERIAL\n\")")
 
+# used to create CMake config files for projects using this library
+include(CMakePackageConfigHelpers)
+
 # Add variable nvecserial_SOURCES with the sources for the NVECSERIAL lib
 SET(nvecserial_SOURCES nvector_serial.c)
 
@@ -40,11 +43,21 @@ ADD_DEFINITIONS(-DBUILD_SUNDIALS_LIBRARY)
 #  - Add the build target for the NVECSERIAL library
 #  - Set the library name and make sure it is not deleted
 #  - Install the NVECSERIAL library
+#  - Export the cmake targets for reuse
 IF(BUILD_STATIC_LIBS)
   ADD_LIBRARY(sundials_nvecserial_static STATIC ${nvecserial_SOURCES} ${shared_SOURCES})
   SET_TARGET_PROPERTIES(sundials_nvecserial_static
     PROPERTIES OUTPUT_NAME sundials_nvecserial CLEAN_DIRECT_OUTPUT 1)
-  INSTALL(TARGETS sundials_nvecserial_static DESTINATION lib)
+  INSTALL(TARGETS sundials_nvecserial_static EXPORT sundials_nvecserial_static-config
+      DESTINATION lib
+      INCLUDES DESTINATION include)
+  # and install the exported target configuration
+  install(EXPORT sundials_nvecserial_static-config DESTINATION ${PACKAGE_CONFIG_DIR})
+  WRITE_BASIC_PACKAGE_VERSION_FILE(${CMAKE_CURRENT_BINARY_DIR}/sundials_nvecserial_static-config-version.cmake
+      VERSION ${nveclib_VERSION}
+      COMPATIBILITY AnyNewerVersion)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sundials_nvecserial_static-config-version.cmake
+      DESTINATION ${PACKAGE_CONFIG_DIR})
 ENDIF(BUILD_STATIC_LIBS)
 
 # Rules for building and installing the shared library:
@@ -58,7 +71,16 @@ IF(BUILD_SHARED_LIBS)
     PROPERTIES OUTPUT_NAME sundials_nvecserial CLEAN_DIRECT_OUTPUT 1)
   SET_TARGET_PROPERTIES(sundials_nvecserial_shared
     PROPERTIES VERSION ${nveclib_VERSION} SOVERSION ${nveclib_SOVERSION})
-  INSTALL(TARGETS sundials_nvecserial_shared DESTINATION lib)
+  INSTALL(TARGETS sundials_nvecserial_shared EXPORT sundials_nvecserial_shared-config
+      DESTINATION lib
+      INCLUDES DESTINATION include)
+  # and install the exported target configuration
+  install(EXPORT sundials_nvecserial_shared-config DESTINATION ${PACKAGE_CONFIG_DIR})
+  WRITE_BASIC_PACKAGE_VERSION_FILE(${CMAKE_CURRENT_BINARY_DIR}/sundials_nvecserial_shared-config-version.cmake
+      VERSION ${nveclib_VERSION}
+      COMPATIBILITY AnyNewerVersion)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sundials_nvecserial_shared-config-version.cmake
+      DESTINATION ${PACKAGE_CONFIG_DIR})
 ENDIF(BUILD_SHARED_LIBS)
 
 # Install the NVECSERIAL header files
