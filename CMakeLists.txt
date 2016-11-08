@@ -928,6 +928,20 @@ IF(BUILD_CPODES)
   ADD_SUBDIRECTORY(src/cpodes)
 ENDIF(BUILD_CPODES)
 
+# Create a wrapper CMake config file
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/SundialsConfig.cmake
+    "# Wrapper to make all Sundials libraries available as a single imported target.\r\n"
+    "file(GLOB config_files \"sundials_*-config.cmake\")\r\n"
+    "foreach(config_file \${config_files})\r\n"
+    "  message(STATUS \"SundialsConfig including \${config_file}\")\r\n"
+    "  include(\${config_file})\r\n"
+    "endforeach()\r\n"
+)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/SundialsConfig.cmake
+    DESTINATION ${PACKAGE_CONFIG_DIR}
+)
+
 # -------------------------------------------------------------
 # Include the subdirectories corresponding to various examples
 # -------------------------------------------------------------
