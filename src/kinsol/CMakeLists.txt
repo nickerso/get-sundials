@@ -18,6 +18,9 @@
 
 INSTALL(CODE "MESSAGE(\"\nInstall KINSOL\n\")")
 
+# used to create CMake config files for projects using this library
+include(CMakePackageConfigHelpers)
+
 # Add variable kinsol_SOURCES with the sources for the KINSOL library
 SET(kinsol_SOURCES
   kinsol.c
@@ -133,8 +136,18 @@ IF(BUILD_STATIC_LIBS)
   SET_TARGET_PROPERTIES(sundials_kinsol_static
     PROPERTIES OUTPUT_NAME sundials_kinsol CLEAN_DIRECT_OUTPUT 1)
 
-  # Install the KINSOL library
-  INSTALL(TARGETS sundials_kinsol_static DESTINATION lib)
+  # Install the KINSOL library and export the target
+  INSTALL(TARGETS sundials_kinsol_static EXPORT sundials_kinsol_static-config
+      DESTINATION lib
+      INCLUDES DESTINATION include)
+
+  # and install the exported target configuration
+  install(EXPORT sundials_kinsol_static-config DESTINATION ${PACKAGE_CONFIG_DIR})
+  WRITE_BASIC_PACKAGE_VERSION_FILE(${CMAKE_CURRENT_BINARY_DIR}/sundials_kinsol_static-config-version.cmake
+      VERSION ${kinsollib_VERSION}
+      COMPATIBILITY AnyNewerVersion)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sundials_kinsol_static-config-version.cmake
+      DESTINATION ${PACKAGE_CONFIG_DIR})
 
 ENDIF(BUILD_STATIC_LIBS)
 
@@ -153,8 +166,18 @@ IF(BUILD_SHARED_LIBS)
   SET_TARGET_PROPERTIES(sundials_kinsol_shared
     PROPERTIES VERSION ${kinsollib_VERSION} SOVERSION ${kinsollib_SOVERSION})
 
-  # Install the KINSOL library
-  INSTALL(TARGETS sundials_kinsol_shared DESTINATION lib)
+  # Install the KINSOL library and export the target
+  INSTALL(TARGETS sundials_kinsol_shared EXPORT sundials_kinsol_shared-config
+      DESTINATION lib
+      INCLUDES DESTINATION include)
+
+  # and install the exported target configuration
+  install(EXPORT sundials_kinsol_shared-config DESTINATION ${PACKAGE_CONFIG_DIR})
+  WRITE_BASIC_PACKAGE_VERSION_FILE(${CMAKE_CURRENT_BINARY_DIR}/sundials_kinsol_shared-config-version.cmake
+      VERSION ${kinsollib_VERSION}
+      COMPATIBILITY AnyNewerVersion)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sundials_kinsol_shared-config-version.cmake
+      DESTINATION ${PACKAGE_CONFIG_DIR})
 
 ENDIF(BUILD_SHARED_LIBS)
 
